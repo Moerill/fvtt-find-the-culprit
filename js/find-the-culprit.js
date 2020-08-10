@@ -36,9 +36,9 @@ function startDebugging(ev) {
 								<option value="">None</option>
 								${settings.current.map(e => `<option value="${e}">${game.modules.get(e)?.data.title}</option>`).join('')}
 							</select>
-							<p>After clicking start the page will refresh and you will be prompted to check whether your issue still exists. This will possibly repeat multiple times until the culprit was found.</p>
+							<p>After clicking start the page will refresh and you will be prompted to check whether your issue still exists. This will repeat multiple times until the culprit was found.</p>
 							<p>After the culprit was found you will be able to choose whether you want to reactivate all currently activated modules or not.</p>
-							<p>Don't worry if you accidently closed the window, just refresh the page manually and it will reappear.</p>`,
+							<p>Don't worry if you accidently close one of the popups, just refresh the page manually and it will reappear.</p>`,
 		buttons: {
 			yes: {
 				icon: '<i class="fas fa-check"></i>',
