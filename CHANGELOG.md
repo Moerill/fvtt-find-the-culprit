@@ -1,3 +1,7 @@
+# v1.2.0
+
+- Updated manifest version....
+
 # v1.1.0
 
 - You may now select a list of modules to keep active.
