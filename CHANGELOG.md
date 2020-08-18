@@ -1,3 +1,7 @@
+# v1.2.1
+
+- More missing manifest updates... Should return to doing this automatically..
+
 # v1.2.0
 
 - Updated manifest version....
