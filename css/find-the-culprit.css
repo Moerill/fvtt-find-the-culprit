@@ -1,0 +1,51 @@
+.ftc-module-list {
+
+
+	background: rgba(0,0,0,0.05);
+	border: 2px inset #6666;
+	border-radius: 0.5em;
+
+	padding: 0.5em;
+	list-style-type: disc;
+	max-height: 300px;
+	overflow-y: scroll;
+	padding: 0.5em;
+	list-style-type: none;
+}
+
+.ftc-module-list li {
+	display: flex;
+	align-items: center;
+}
+
+.ftc-module-list li input.ftc-checkbox {
+	margin-right: 0.5em;
+}
+
+.ftc-module-list li:not(:first-child) {
+	border-top: 1px dashed #6666;
+}
+
+.ftc-module-list i {
+	min-width: 1.5ch;
+}
+
+.ftc-active {
+	color: green;
+}
+
+.ftc-inactive {
+	color: red;
+}
+
+.ftc-submit-div {
+	display: flex;
+}
+
+.ftc-submit-div button {
+	flex: 1;
+}
+
+.ftc-submit-div button[type="submit"] {
+	flex: 2;
+}

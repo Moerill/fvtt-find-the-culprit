@@ -14,9 +14,15 @@ Hooks.on('renderModuleManagement', onRenderModuleManagement)
 
 function onRenderModuleManagement(app, html, options) {
 	const form = html[0].querySelector('form');
-	const btn = form.insertBefore(document.createElement('button'), form.children[0]);
-	btn.innerText = "Find the culprit!"
+	const submitBtn = form.querySelector('button[type="submit"]');
+	const btn = document.createElement('button');
+	btn.innerHTML = '<i class="fas fa-search"></i> Find the culprit!';
 	btn.addEventListener('click', startDebugging);
+	const div = document.createElement('div');
+	div.classList.add('ftc-submit-div');
+	form.appendChild(div);
+	div.appendChild(btn);
+	div.appendChild(submitBtn);
 }
 
 function startDebugging(ev) {
@@ -25,17 +31,16 @@ function startDebugging(ev) {
 	let original = game.settings.get("core", ModuleManagement.CONFIG_SETTING);
 	let settings = {
 		original,
-		current: Object.keys(original).filter(e => original[e] && e !== moduleName),
+		active: Object.keys(original).filter(e => original[e] && e !== moduleName),
 		step: 0
 	};
 
 	new Dialog({
 		title: 'Find the culprit',
-		content: `<p>Choose a module to keep active:</p>
-							<select>
-								<option value="">None</option>
-								${settings.current.map(e => `<option value="${e}">${game.modules.get(e)?.data.title}</option>`).join('')}
-							</select>
+		content: `<p>Choose modules to keep active:</p>
+							<ul class='ftc-module-list ftc-module-chooser'>
+								${settings.active.map(e => `<li><input class="ftc-checkbox" type="checkbox" data-module="${e}"id="ftc-${e}"><label for="${e}">${game.modules.get(e)?.data.title}</label></li>`).join("")}
+							</ul>
 							<p>After clicking start the page will refresh and you will be prompted to check whether your issue still exists. This will repeat multiple times until the culprit was found.</p>
 							<p>After the culprit was found you will be able to choose whether you want to reactivate all currently activated modules or not.</p>
 							<p>Don't worry if you accidently close one of the popups, just refresh the page manually and it will reappear.</p>`,
@@ -44,11 +49,12 @@ function startDebugging(ev) {
 				icon: '<i class="fas fa-check"></i>',
 				label: "Start",
 				callback: async (html) => {
-					const chosen = html[0].querySelector('select').value;
-					settings.current = settings.current.filter(e => e !== chosen);
+					const chosen = Array.from(html[0].querySelectorAll('input[type="checkbox"]:checked') || []).map(e => e.dataset.module);
+
+					settings.active = settings.active.filter(e => !chosen.includes(e));
 					settings.chosen = chosen;
 					await game.settings.set(moduleName, 'modules', settings);
-					deactivationStep();
+					deactivationStep([]);
 				}
 			},
 			no: {
@@ -68,51 +74,31 @@ async function doStep() {
 
 	if (curr.step === 0) return doFirstStep();
 
-	if (curr.current?.length > 1) return doBinarySearchStep();
+	return doBinarySearchStep();
+	// if (curr.active?.length) ;
 
-	new Dialog({
-		title: 'Find the culprit, 1 Module active.',
-		content: `<p>Does your issue persist?</p>`,
-		buttons: {
-			yes: {
-				icon: '<i class="fas fa-check"></i>',
-				label: "Yes",
-				callback: async () => {
-					if (curr.last.length === 1)
-						return renderFinalDialog(curr.last[0]);
-										
-					curr.current = curr.last.slice(0, Math.floor(curr.last.length / 2));
-					curr.last = curr.last.slice(Math.floor(curr.last.length / 2));
-					await game.settings.set(moduleName, 'modules', curr);
-					deactivationStep();
-				}
-			},
-			no: {
-				icon: '<i class="fas fa-times"></i>',
-				label: "No",
-				callback: async () => {
-					renderFinalDialog(curr.current[0]);
-				}
-			}
-		}
-	}).render(true);
 
 }
 
 function renderFinalDialog(culprit) {
-	console.log(culprit);
 	new Dialog({
 		title: 'Found the culprit!',
-		content: `<p>We found the culprit!</p>
-							<p>It is <span style="font-weight: bold;">${game.modules.get(culprit).data.title}</span></p>`,
+		content: `<h2>We found the culprit!</h2>
+							<ul class='ftc-module-list'>
+								<li title="Currently active."><i class="fas fa-check ftc-active"></i>${game.modules.get(culprit).data.title}</li>
+							</ul>`,
 		buttons: {
 			yes: {
 				label: 'Reactivate all modules?',
-				callback: reactivateModules
+				callback: async () => {
+					await reactivateModules()
+					resetSettings();
+				}
 			},
 			no: {
 				icon: '<i class="fas fa-times"></i>',
 				label: "No",
+				callback: resetSettings
 			}
 		}
 	}).render(true);
@@ -121,31 +107,28 @@ function renderFinalDialog(culprit) {
 function doFirstStep() {
 	const curr = game.settings.get(moduleName, 'modules');
 	new Dialog({
-		title: 'Find the culprit, All modules deactivated.',
-		content: `<p>Does your issue persist?</p>`,
+		title: 'Find the culprit!',
+		content: `<p>All modules, except your chosen ones, are deactivated.</p>
+							<p>Does your issue persist?</p>`,
 		buttons: {
 			yes: {
 				icon: '<i class="fas fa-check"></i>',
 				label: "Yes",
-				callback: async () => {
-					const curr = game.settings.get(moduleName, 'modules');
-					curr.step = 1;
-					await game.settings.set(moduleName, 'modules', curr);
-					deactivationStep();
-				}
-			},
-			no: {
-				icon: '<i class="fas fa-times"></i>',
-				label: "No",
 				callback: () => {
-					const chosen = game.modules.get(curr.chosen)?.data?.title
+					const chosen = curr.chosen; 
 					new Dialog({
 						title: 'Find the Culprit',
-						content: `<p>Seems like the issue is a bug in ${chosen ? chosen : 'the core software'} itself!</p>`,
+						content: `<p>Seems like the issue is a bug in ${chosen?.length ? `your chosen module list: 	
+								<ul class='ftc-module-list'>
+									${chosen.map(e => `<li>- ${game.modules.get(e).data.title}</li>`).join("")}
+								</ul>` : 'the core software.'}</p>`,
 						buttons: {
 							yes: {
 								label: 'Reactivate all modules',
-								callback: reactivateModules
+								callback: async () => {
+									await reactivateModules()
+									resetSettings();
+								}
 							},
 							no: {
 								icon: '<i class="fas fa-times"></i>',
@@ -154,6 +137,16 @@ function doFirstStep() {
 						}
 					}).render(true);
 				}
+			},
+			no: {
+				icon: '<i class="fas fa-times"></i>',
+				label: "No",
+				callback: async () => {
+					const curr = game.settings.get(moduleName, 'modules');
+					curr.step = 1;
+					await game.settings.set(moduleName, 'modules', curr);
+					deactivationStep(curr.active);
+				}
 			}
 		}
 	}).render(true);
@@ -161,45 +154,63 @@ function doFirstStep() {
 
 function doBinarySearchStep() {
 	const curr = game.settings.get(moduleName, 'modules');
+	const numActive = (curr.active?.length || 0),
+				numInactive = (curr.inactive?.length || 0),
+				stepsLeft = Math.ceil(Math.log2((numActive > numInactive ? numActive : numInactive))) + 1;
 	new Dialog({
-		title: `Find the culprit, ${curr.current.length} modules left`,
-		content: `<p>Does your issue persist?</p>`,
+		title: `Find the culprit`,
+		content: `<h2>Current statistics</h2>
+							<p>${numActive + numInactive} modules still in list.<br>
+							Remaining steps &leq; ${stepsLeft}.<br>
+							Current module list:
+								<ul class='ftc-module-list'>
+									${(curr.active || []).map(e => `<li title="Currently active."><i class="fas fa-check ftc-active"></i>${game.modules.get(e).data.title}</li>`).join("")}
+									${(curr.inactive || []).map(e => `<li title="Currently inactive."><i class="fas fa-times ftc-inactive"></i>${game.modules.get(e).data.title}</li>`).join("")}
+								</ul>
+							</p>
+							<h2></h2>
+							<h2 style="text-align:center; border-bottom: none;">Does your issue persist?</h2>`,
 		buttons: {
 			yes: {
 				icon: '<i class="fas fa-check"></i>',
 				label: "Yes",
 				callback: async () => {
-					curr.last = curr.current.slice(Math.floor(curr.current.length / 2));
-					curr.current = curr.current.slice(0, Math.floor(curr.current.length / 2));
-					await game.settings.set(moduleName, 'modules', curr);
-					deactivationStep();
+					deactivationStep(curr.active);
 				}
 			},
 			no: {
 				icon: '<i class="fas fa-times"></i>',
 				label: "No",
 				callback: async () => {
-						curr.last = curr.current.slice(0, Math.floor(curr.current.length / 2));
-						curr.current = curr.current.slice(Math.floor(curr.current.length / 2) + 1);
-						await game.settings.set(moduleName, 'modules', curr);
-						deactivationStep();
+						deactivationStep(curr.inactive);
 				}
 			}
 		}
 	}).render(true);
 }
 
-function deactivationStep() {
-	const curr = game.settings.get(moduleName, 'modules');
-	console.log(curr);
+async function deactivationStep(chosenModules = []) {
+	if (chosenModules.length === 1) return renderFinalDialog(chosenModules[0]);
+
+	const currSettings = game.settings.get(moduleName, 'modules');
+
 	let original = game.settings.get("core", ModuleManagement.CONFIG_SETTING);
+
 	// deactivate all modules
-	const deactivate = Object.keys(original).filter(e => e !== curr.chosen && e !== moduleName);
+	const deactivate = Object.keys(original).filter(e => !currSettings.chosen.includes(e) && e !== moduleName);
 	for (let module of deactivate)
 		original[module] = false;
-	// activate only first half
-	for (let i = 0; i < Math.floor(curr.current.length / 2); i++)
-		original[curr.current[i]] = true;
+
+	if (chosenModules.length > 0) {
+		const half = Math.ceil(chosenModules.length  / 2);
+		currSettings.inactive = chosenModules.slice(half);
+		currSettings.active = chosenModules.slice(0, half);
+		// activate only first half
+		for (let module of currSettings.active)
+			original[module] = true;
+
+		await game.settings.set(moduleName, 'modules', currSettings);
+	}
 
 	game.settings.set('core', ModuleManagement.CONFIG_SETTING, original);
 }
@@ -210,6 +221,9 @@ async function reactivateModules() {
 	for (let mod in curr.original) 
 		original[mod] = curr.original[mod];
 
-	await game.settings.set(moduleName, 'modules', {'-=step': null, '-=current': null, '-=original': null});
 	game.settings.set('core', ModuleManagement.CONFIG_SETTING, original);
+}
+
+async function resetSettings() {
+	return game.settings.set(moduleName, 'modules', {'-=step': null, '-=active': null, '-=original': null, '-=inactive': null});
 }
