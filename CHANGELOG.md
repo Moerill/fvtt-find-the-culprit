@@ -1,3 +1,8 @@
+# v1.3.1
+
+- Fixed packaging, removed unecessary files from the package.
+- now using some manifest+ features  (created an icon)
+
 # v1.3.0
 
 - Added reset button to each step
