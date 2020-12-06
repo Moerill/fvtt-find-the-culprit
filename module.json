@@ -20,5 +20,6 @@
 	"license": "https://github.com/Moerill/fvtt-find-the-culprit/blob/master/LICENSE",
 	"readme": "https://github.com/Moerill/fvtt-find-the-culprit#find-the-culprit",
 	"bugs": "https://github.com/Moerill/fvtt-find-the-culprit/issues",
-	"changelog": "https://github.com/Moerill/fvtt-find-the-culprit/blob/master/CHANGELOG.md"
+	"changelog": "https://github.com/Moerill/fvtt-find-the-culprit/blob/master/CHANGELOG.md",
+	"manifestPlusVersion": "1.0.0"
 }
