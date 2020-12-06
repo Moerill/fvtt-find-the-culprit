@@ -1,3 +1,9 @@
+# v1.3.0
+
+- Added reset button to each step
+- Fixed button (position) in settings
+- Added "fail save" for some weird cases, where only 0 modules were left
+
 # v1.2.1
 
 - More missing manifest updates... Should return to doing this automatically..
