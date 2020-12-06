@@ -17,6 +17,6 @@ This module helps you debug compatibility issues of modules, by finding the modu
 This work is licensed under Foundry Virtual Tabletop [EULA - Limited License Agreement for module development](https://foundryvtt.com/article/license/).
 
 ## Support the development
-Want to help me develop? Send a merge request on this gitlab or contact me on Discord (Moerill#7205).  
-Want to support me in another way? 
-Leave me some nice comments (e.g. on Discord), recommend this module to others and/or leave a donation over at my [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=FYZ294SP2JBGS&source=url).
+'m doing this project mostly alone (with partial help of some wonderful people) in my spare time and for free.  
+If you want to encourage me to keep doing this, i am happy about all kind of tokens of appreciation. (Like some nice words, recommending this project or contributions to the project).  
+What about donations? I do feel very honored that you think about giving me a donation! But instead I'd prefer if you send the cash to a good cause of your choosing. :)
