@@ -1,3 +1,7 @@
+# v1.3.2
+
+- reverted the "fail" save from 1.3.0, since it resulted in even more bugs, ooopsie.
+
 # v1.3.1
 
 - Fixed packaging, removed unecessary files from the package.
