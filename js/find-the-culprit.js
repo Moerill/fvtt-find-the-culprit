@@ -227,7 +227,7 @@ function doBinarySearchStep() {
 }
 
 async function deactivationStep(chosenModules = []) {
-  if (chosenModules.length <= 1) return renderFinalDialog(chosenModules[0]);
+  if (chosenModules.length === 1) return renderFinalDialog(chosenModules[0]);
 
   const currSettings = game.settings.get(moduleName, "modules");
 
