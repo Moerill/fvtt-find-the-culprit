@@ -2,7 +2,7 @@
 	"name": "find-the-culprit",
 	"title": "Find the culprit",
 	"description": "This module helps you to find a module causing issues, by automating the process of deactivating and reactivating modules.<br>Just click the 'Find the culprit' button inside Module Management.",
-	"version": "1.3.1",
+	"version": "1.3.2",
 	"minimumCoreVersion": "0.6.0",
 	"compatibleCoreVersion": "1.0.0",
 	"author": "Moerill",
