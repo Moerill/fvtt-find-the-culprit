@@ -10,7 +10,7 @@
 	"styles": ["css/find-the-culprit.css"],
 	"manifest": "https://raw.githubusercontent.com/Moerill/fvtt-find-the-culprit/master/module.json",
 	"url": "https://github.com/Moerill/fvtt-find-the-culprit",
-	"download": "https://github.com/Moerill/fvtt-find-the-culprit/releases/download/v1.3.1/v1.3.1.zip",
+	"download": "https://github.com/Moerill/fvtt-find-the-culprit/releases/download/v1.3.2/v1.3.2.zip",
 	"media": [
 		{
 			"type": "icon",
