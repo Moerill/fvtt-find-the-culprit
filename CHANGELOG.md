@@ -1,3 +1,7 @@
+# v1.3.3
+
+- fixed all manifest failures now.. hopefully!
+
 # v1.3.2
 
 - reverted the "fail" save from 1.3.0, since it resulted in even more bugs, ooopsie.
