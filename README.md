@@ -11,7 +11,6 @@ This module helps you debug compatibility issues of modules, by finding the modu
   * Depending on the amount of modules you have installed this process could take a while, but at most ``log(n) + 2`` iterations, where *n* is the amount of modules you have activated.
 * If you accidently close one of the prompts, just refresh the page manually and it will reappear.
 
-
 ## Maintenance Mode  
 This repository is no longer receiving active attention. In my opinion this module is complete and stable, and i'll be focusing my efforts on other modules/stuff. PR's are welcome and i'll try to investigate bugs and keep this module up to date with Foundry, when i find the time to do so.  
 That said, feel free to keep suggesting features, if i find something interesting i may end up implementing it.
