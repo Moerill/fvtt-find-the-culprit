@@ -11,6 +11,10 @@ This module helps you debug compatibility issues of modules, by finding the modu
   * Depending on the amount of modules you have installed this process could take a while, but at most ``log(n) + 2`` iterations, where *n* is the amount of modules you have activated.
 * If you accidently close one of the prompts, just refresh the page manually and it will reappear.
 
+
+## Maintenance Mode  
+This repository is no longer receiving active attention. I view the Module to be in a stable and feature-complete state, and will be focusing my efforts on other modules. PR's are welcome, and I'll try to investigate bugs and keep the Module up to date with Foundry in a timely manner.  
+
 ## Licensing
 <img alt="GitHub" src="https://img.shields.io/github/license/moerill/fvtt-find-the-culprit?style=for-the-badge">
 
