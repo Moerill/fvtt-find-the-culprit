@@ -8,6 +8,11 @@ function registerSetting() {
     type: Object,
     config: false,
   });
+  game.settings.register(moduleName, "locks", {
+    default: {},
+    type: Object,
+    config: false,
+  });
 }
 
 Hooks.on("renderModuleManagement", onRenderModuleManagement);
@@ -34,17 +39,23 @@ function startDebugging(ev) {
     ),
     step: 0,
   };
+  let locks = game.settings.get(moduleName, "locks");
 
-  new Dialog({
+  const app = new Dialog({
     title: "Find the culprit",
     content: `<p>Choose modules to keep active:</p>
+                            <input type="text" name="search" placeholder="Filter Modules" value="">
 							<ul class='ftc-module-list ftc-module-chooser'>
 								${settings.active
                   .map(
                     (e) =>
-                      `<li><input class="ftc-checkbox" type="checkbox" data-module="${e}"id="ftc-${e}"><label for="${e}">${
+                      `<li data-module="${e}">
+                        <label class="ftc-lock-checkbox">
+                        <input class="lock-btn hidden" type="checkbox" for="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
+                        <span class="fas lock"></span>
+                        </label class="package-title"><input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label for="${e}">${
                         game.modules.get(e)?.data.title
-                      }</label></li>`
+                      }</label></li>`,
                   )
                   .join("")}
 							</ul>
@@ -57,7 +68,7 @@ function startDebugging(ev) {
         label: "Start",
         callback: async (html) => {
           const chosen = Array.from(
-            html[0].querySelectorAll('input[type="checkbox"]:checked') || []
+            html[0].querySelectorAll('input[type="checkbox"].ftc-checkbox:checked',) || [],
           ).map((e) => e.dataset.module);
 
           settings.active = settings.active.filter((e) => !chosen.includes(e));
@@ -72,6 +83,46 @@ function startDebugging(ev) {
       },
     },
   }).render(true);
+  const search = new SearchFilter({
+    inputSelector: 'input[name="search"]',
+    contentSelector: ".ftc-module-list",
+    callback: (event, query, rgx, html) => {
+      for (let li of html.children) {
+        if (!query) {
+          li.classList.remove("hidden");
+          continue;
+        }
+        const name = li.dataset.module;
+        const title = (li.querySelector(".package-title")?.textContent || "")
+          .trim();
+        const author = (li.querySelector(".author")?.textContent || "").trim();
+        const match = rgx.test(SearchFilter.cleanQuery(name)) ||
+          rgx.test(SearchFilter.cleanQuery(title)) ||
+          rgx.test(SearchFilter.cleanQuery(author));
+        li.classList.toggle("hidden", !match);
+      }
+    },
+  });
+
+  const renderHook = Hooks.on("renderDialog", (dialog, html) => {
+    if (dialog.appId === app.appId) {
+      search.bind(html[0]);
+      html.find("input.lock-btn").on("click", (ev) => {
+        const el = ev.target;
+        const name = el.getAttribute("for");
+        const target = html.find(`input[data-module=${name}]`)[0];
+        target.checked = el.checked;
+        locks[name] = target.checked;
+      });
+      const closeHook = Hooks.on("closeDialog", (dialog, html) => {
+        if (dialog.appId === app.appId) {
+          game.settings.set(moduleName, "locks", locks);
+        }
+        Hooks.off(closeHook);
+      });
+      Hooks.off(renderHook);
+    }
+  });
 }
 
 Hooks.on("ready", doStep);
