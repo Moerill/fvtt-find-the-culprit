@@ -51,8 +51,9 @@ function startDebugging(ev) {
                     (e) =>
                       `<li data-module="${e}">
                         <label class="ftc-lock-checkbox">
-                        <input class="lock-btn hidden" type="checkbox" for="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
-                        <span class="fas lock"></span>
+                          <input class="lock-btn hidden" type="checkbox" for="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
+                          <span class="fas lock"></span>
+                        </label>
                         <input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label class="package-title" for="${e}">${
                         game.modules.get(e)?.data.title
                       }</label></li>`,
@@ -102,16 +103,55 @@ function startDebugging(ev) {
     },
   });
 
+  async function _onChangeCheckbox(ev) {
+    const input = ev.target;
+    const name = input.getAttribute("data-module");
+    const module = game.modules.get(name);
+    if ( !module.data.dependencies?.length ) return;
+    const allCheckboxes = app.element.find("input.ftc-checkbox").toArray();
+    const checkBoxes = [];
+
+    const dependenciesNotMatchingDesiredState = module.data.dependencies.filter(x => {
+      const dependency = allCheckboxes.find((checkbox) => checkbox.getAttribute("data-module") === x.name);
+      if (dependency.checked !== input.checked) {
+          checkBoxes.push(dependency);
+          return true;
+      }
+      return false;
+    });
+
+    if ( dependenciesNotMatchingDesiredState.length == 0 ) return;
+
+    let html = await renderTemplate("templates/setup/impacted-dependencies.html", {
+      enabling: input.checked,
+      dependencies: dependenciesNotMatchingDesiredState
+    });
+
+    return Dialog.confirm({
+      title: game.i18n.localize("MODMANAGE.Dependencies"),
+      content: html,
+      yes: () => {
+        checkBoxes.forEach(checkbox => {
+          checkbox.checked = input.checked;
+          $(checkbox).trigger("change");
+        });
+      },
+      no: () => {}
+    });
+  }
+
   const renderHook = Hooks.on("renderDialog", (dialog, html) => {
     if (dialog.appId === app.appId) {
       search.bind(html[0]);
-      html.find("input.lock-btn").on("click", (ev) => {
+      html.find("input.lock-btn").on("change", (ev) => {
         const el = ev.target;
         const name = el.getAttribute("for");
         const target = html.find(`input[data-module=${name}]`)[0];
         target.checked = el.checked;
         locks[name] = target.checked;
+        $(target).trigger("change");
       });
+      html.find("input.ftc-checkbox").on("change", _onChangeCheckbox);
       const closeHook = Hooks.on("closeDialog", (dialog, html) => {
         if (dialog.appId === app.appId) {
           game.settings.set(moduleName, "locks", locks);
