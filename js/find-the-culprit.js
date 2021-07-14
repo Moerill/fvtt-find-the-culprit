@@ -51,10 +51,9 @@ function startDebugging(ev) {
                     (e) =>
                       `<li data-module="${e}">
                         <label class="ftc-lock-checkbox">
-                          <input class="lock-btn hidden" type="checkbox" for="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
-                          <span class="fas lock"></span>
-                        </label>
-                        <input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label class="package-title" for="${e}">${
+                        <input class="lock-btn hidden" type="checkbox" data-module="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
+                        <span class="fas lock"></span>
+                        </label><input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label class="package-title" for="${e}">${
                         game.modules.get(e)?.data.title
                       }</label></li>`,
                   )
@@ -107,14 +106,18 @@ function startDebugging(ev) {
     const input = ev.target;
     const name = input.getAttribute("data-module");
     const module = game.modules.get(name);
+    const lock = app.element.find(`input.lock-btn[data-module=${name}]`)[0];
     if ( !module.data.dependencies?.length ) return;
     const allCheckboxes = app.element.find("input.ftc-checkbox").toArray();
     const checkBoxes = [];
+    const locks = [];
 
     const dependenciesNotMatchingDesiredState = module.data.dependencies.filter(x => {
       const dependency = allCheckboxes.find((checkbox) => checkbox.getAttribute("data-module") === x.name);
       if (dependency.checked !== input.checked) {
           checkBoxes.push(dependency);
+          const dependencyLock = app.element.find(`input.lock-btn[data-module=${x.name}]`)[0];
+          if (lock.checked !== dependencyLock.checked) locks.push(dependencyLock);
           return true;
       }
       return false;
@@ -131,6 +134,10 @@ function startDebugging(ev) {
       title: game.i18n.localize("MODMANAGE.Dependencies"),
       content: html,
       yes: () => {
+        locks.forEach(checkbox => {
+            checkbox.checked = lock.checked;
+            $(checkbox).trigger("change");
+        });
         checkBoxes.forEach(checkbox => {
           checkbox.checked = input.checked;
           $(checkbox).trigger("change");
@@ -145,8 +152,8 @@ function startDebugging(ev) {
       search.bind(html[0]);
       html.find("input.lock-btn").on("change", (ev) => {
         const el = ev.target;
-        const name = el.getAttribute("for");
-        const target = html.find(`input[data-module=${name}]`)[0];
+        const name = el.getAttribute("data-module");
+        const target = html.find(`input.ftc-checkbox[data-module=${name}]`)[0];
         target.checked = el.checked;
         locks[name] = target.checked;
         $(target).trigger("change");
