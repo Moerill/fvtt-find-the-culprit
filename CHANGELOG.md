@@ -1,3 +1,10 @@
+# v1.4.0
+
+- Thanks to GitHub user @elizeuangelo for providing this patch!
+- *New* Search filter
+- *New* Dependency checking
+- *New* Lock/unlock button for remembering always active modules
+
 # v1.3.3
 
 - fixed all manifest failures now.. hopefully!
