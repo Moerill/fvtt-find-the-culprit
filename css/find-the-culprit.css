@@ -18,7 +18,6 @@
 
 .ftc-module-list li input.ftc-checkbox {
 	margin-right: 1em;
-	/* margin-left: 1em; */
 }
 
 .ftc-module-list li:not(:first-child) {
