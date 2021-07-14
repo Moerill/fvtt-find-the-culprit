@@ -114,7 +114,7 @@ function startDebugging(ev) {
 
     const dependenciesNotMatchingDesiredState = module.data.dependencies.filter(x => {
       const dependency = allCheckboxes.find((checkbox) => checkbox.getAttribute("data-module") === x.name);
-      if (dependency.checked !== input.checked) {
+      if (dependency && dependency.checked !== input.checked) {
           checkBoxes.push(dependency);
           const dependencyLock = app.element.find(`input.lock-btn[data-module=${x.name}]`)[0];
           if (lock.checked !== dependencyLock.checked) locks.push(dependencyLock);
