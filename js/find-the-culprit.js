@@ -53,7 +53,7 @@ function startDebugging(ev) {
                         <label class="ftc-lock-checkbox">
                         <input class="lock-btn hidden" type="checkbox" for="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
                         <span class="fas lock"></span>
-                        </label class="package-title"><input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label for="${e}">${
+                        <input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label class="package-title" for="${e}">${
                         game.modules.get(e)?.data.title
                       }</label></li>`,
                   )
@@ -95,10 +95,8 @@ function startDebugging(ev) {
         const name = li.dataset.module;
         const title = (li.querySelector(".package-title")?.textContent || "")
           .trim();
-        const author = (li.querySelector(".author")?.textContent || "").trim();
         const match = rgx.test(SearchFilter.cleanQuery(name)) ||
-          rgx.test(SearchFilter.cleanQuery(title)) ||
-          rgx.test(SearchFilter.cleanQuery(author));
+          rgx.test(SearchFilter.cleanQuery(title));
         li.classList.toggle("hidden", !match);
       }
     },
