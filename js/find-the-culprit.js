@@ -25,6 +25,7 @@ function onRenderModuleManagement(app, html, options) {
   const div = document.createElement("div");
   div.classList.add("ftc-submit-div");
   footer.append(btn);
+  app.setPosition();
 }
 
 function startDebugging(ev) {
