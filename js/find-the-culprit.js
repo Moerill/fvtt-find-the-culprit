@@ -164,9 +164,9 @@ function startDebugging(ev) {
         if (dialog.appId === app.appId) {
           game.settings.set(moduleName, "locks", locks);
         }
-        Hooks.off(closeHook);
+        Hooks.off("closeDialog", closeHook);
       });
-      Hooks.off(renderHook);
+      Hooks.off("renderDialog", renderHook);
     }
   });
 }
