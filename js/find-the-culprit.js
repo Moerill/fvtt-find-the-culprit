@@ -226,7 +226,7 @@ function doFirstStep() {
             title: "Find the Culprit",
             content: `<p>Seems like the issue is a bug in ${
               chosen?.length
-                ? `your chosen module list: 	
+                ? `your chosen module list:
 								<ul class='ftc-module-list'>
 									${chosen.map((e) => `<li>- ${game.modules.get(e).data.title}</li>`).join("")}
 								</ul>`
