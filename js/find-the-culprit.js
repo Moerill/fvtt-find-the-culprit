@@ -15,6 +15,12 @@ function registerSetting() {
   });
 }
 
+// Temporarily required by foundryvtt/foundryvtt#7740
+Hooks.on("setup", () => {
+	game.settings.settings.get(`core.${ModuleManagement.CONFIG_SETTING}`).onChange =
+		foundry.utils.debouncedReload ?? window.location.reload;
+});
+
 Hooks.on("renderModuleManagement", onRenderModuleManagement);
 
 function onRenderModuleManagement(app, html, options) {
@@ -25,6 +31,7 @@ function onRenderModuleManagement(app, html, options) {
   const div = document.createElement("div");
   div.classList.add("ftc-submit-div");
   footer.append(btn);
+  app.setPosition();
 }
 
 function startDebugging(ev) {
@@ -163,9 +170,9 @@ function startDebugging(ev) {
         if (dialog.appId === app.appId) {
           game.settings.set(moduleName, "locks", locks);
         }
-        Hooks.off(closeHook);
+        Hooks.off("closeDialog", closeHook);
       });
-      Hooks.off(renderHook);
+      Hooks.off("renderDialog", renderHook);
     }
   });
 }
@@ -225,7 +232,7 @@ function doFirstStep() {
             title: "Find the Culprit",
             content: `<p>Seems like the issue is a bug in ${
               chosen?.length
-                ? `your chosen module list: 	
+                ? `your chosen module list:
 								<ul class='ftc-module-list'>
 									${chosen.map((e) => `<li>- ${game.modules.get(e).data.title}</li>`).join("")}
 								</ul>`
