@@ -1,3 +1,7 @@
+# v1.4.1
+
+- Now compatible with FVTT v10, thanks to @arcanist
+
 # v1.4.0
 
 - Thanks to GitHub user @elizeuangelo for providing this patch!

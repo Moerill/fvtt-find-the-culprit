@@ -15,20 +15,16 @@
   "bugs": "https://github.com/Moerill/fvtt-find-the-culprit/issues",
   "changelog": "https://github.com/Moerill/fvtt-find-the-culprit/blob/master/CHANGELOG.md",
   "flags": {},
-  "version": "1.4.0",
+  "version": "1.4.1",
   "compatibility": {
-    "minimum": "0.8.8",
+    "minimum": "9",
     "verified": "10"
   },
-  "minimumCoreVersion": "0.8.8",
+  "minimumCoreVersion": "9",
   "compatibleCoreVersion": "10",
   "scripts": [],
-  "esmodules": [
-    "js/find-the-culprit.js"
-  ],
-  "styles": [
-    "css/find-the-culprit.css"
-  ],
+  "esmodules": ["js/find-the-culprit.js"],
+  "styles": ["css/find-the-culprit.css"],
   "languages": [],
   "packs": [],
   "system": [],
