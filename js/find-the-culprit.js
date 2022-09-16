@@ -16,12 +16,12 @@ function registerSetting() {
 }
 
 // Temporarily required by foundryvtt/foundryvtt#7740
-if (game.release?.generation >= 10) {
-	Hooks.on("setup", () => {
+Hooks.on("setup", () => {
+    if (game.release?.generation >= 10) {
 		game.settings.settings.get(`core.${ModuleManagement.CONFIG_SETTING}`).onChange =
 			foundry.utils.debouncedReload ?? window.location.reload;
-	});
-}
+      }
+});
 
 Hooks.on("renderModuleManagement", onRenderModuleManagement);
 

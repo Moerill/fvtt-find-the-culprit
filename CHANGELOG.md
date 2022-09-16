@@ -1,8 +1,4 @@
-# v1.4.3
-
-- Restore compatibility with versions prior to V10
-
-# v1.4.1
+# v1.4.4
 
 - Now compatible with FVTT v10, thanks to @arcanist
 
