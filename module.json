@@ -15,7 +15,7 @@
   "bugs": "https://github.com/Moerill/fvtt-find-the-culprit/issues",
   "changelog": "https://github.com/Moerill/fvtt-find-the-culprit/blob/master/CHANGELOG.md",
   "flags": {},
-  "version": "1.4.4",
+  "version": "1.4.5",
   "compatibility": {
     "minimum": "9",
     "verified": "10"
