@@ -1,3 +1,6 @@
+# v1.4.5
+- Moved window reload logic to `await` instead of core settings `onchange` event. Fixes incompatibility between MM+ and Ftc
+
 # v1.4.4
 
 - Now compatible with FVTT v10, thanks to @arcanist
