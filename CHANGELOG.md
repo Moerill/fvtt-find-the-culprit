@@ -1,3 +1,6 @@
+# v1.4.6
+- Added semicolon to end of `await game.settings.set(...)` was causing reload logic to error
+
 # v1.4.5
 - Moved window reload logic to `await` instead of core settings `onchange` event. Fixes incompatibility between MM+ and Ftc
 
