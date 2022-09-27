@@ -346,7 +346,7 @@ async function deactivationStep(chosenModules = []) {
     await game.settings.set(moduleName, "modules", currSettings);
   }
 
-  await game.settings.set("core", ModuleManagement.CONFIG_SETTING, original)
+  await game.settings.set("core", ModuleManagement.CONFIG_SETTING, original);
   (foundry.utils.debouncedReload ?? window.location.reload)(); // Temporarily required by foundryvtt/foundryvtt#7740
 }
 
@@ -357,7 +357,7 @@ async function reactivateModules() {
   );
   for (let mod in curr.original) original[mod] = curr.original[mod];
 
-  await game.settings.set("core", ModuleManagement.CONFIG_SETTING, original)
+  await game.settings.set("core", ModuleManagement.CONFIG_SETTING, original);
   (foundry.utils.debouncedReload ?? window.location.reload)(); // Temporarily required by foundryvtt/foundryvtt#7740
 }
 
