@@ -109,7 +109,6 @@ function startDebugging(ev) {
     const module = game.modules.get(name);
     const lock = app.element.find(`input.lock-btn[data-module=${name}]`)[0];
     if ( !module.relationships.requires.size ) return;
-    console.warn(module.relationships.requires);
     const allCheckboxes = app.element.find("input.ftc-checkbox").toArray();
     const checkBoxes = [];
     const locks = [];
@@ -154,10 +153,7 @@ function startDebugging(ev) {
       enabling: input.checked,
       dependencies: dependenciesNotMatchingDesiredState
     }
-    console.warn(templateData);
     const content = (await Handlebars.compile(template))(templateData);
-    console.warn(content);
-
     return Dialog.confirm({
       title: game.i18n.localize("MODMANAGE.Dependencies"),
       content,
