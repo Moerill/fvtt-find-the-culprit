@@ -55,7 +55,7 @@ function startDebugging(ev) {
                         <input class="lock-btn hidden" type="checkbox" data-module="${e}" tabindex="-1" ${locks[e] ? "checked" : ""}/>
                         <span class="fas lock"></span>
                         </label><input class="ftc-checkbox" type="checkbox" data-module="${e}" id="ftc-${e}" ${locks[e] ? "checked" : ""}><label class="package-title" for="${e}">${
-                        game.modules.get(e)?.data.title
+                        game.modules.get(e)?.title
                       }</label></li>`,
                   )
                   .join("")}
@@ -108,32 +108,59 @@ function startDebugging(ev) {
     const name = input.getAttribute("data-module");
     const module = game.modules.get(name);
     const lock = app.element.find(`input.lock-btn[data-module=${name}]`)[0];
-    if ( !module.data.dependencies?.length ) return;
+    if ( !module.relationships.requires.size ) return;
+    console.warn(module.relationships.requires);
     const allCheckboxes = app.element.find("input.ftc-checkbox").toArray();
     const checkBoxes = [];
     const locks = [];
 
-    const dependenciesNotMatchingDesiredState = module.data.dependencies.filter(x => {
-      const dependency = allCheckboxes.find((checkbox) => checkbox.getAttribute("data-module") === x.name);
+    const dependenciesNotMatchingDesiredState = Array.from(module.relationships.requires.filter(x => {
+      const dependency = allCheckboxes.find((checkbox) => checkbox.getAttribute("data-module") === x.id);
       if (dependency && dependency.checked !== input.checked) {
           checkBoxes.push(dependency);
-          const dependencyLock = app.element.find(`input.lock-btn[data-module=${x.name}]`)[0];
+          const dependencyLock = app.element.find(`input.lock-btn[data-module=${x.id}]`)[0];
           if (lock.checked !== dependencyLock.checked) locks.push(dependencyLock);
           return true;
       }
       return false;
+    }))
+    .map(d => {      
+      d.title =  game.modules.get(d.id)?.title ?? '';
+      return d;
     });
-
+    
     if ( dependenciesNotMatchingDesiredState.length == 0 ) return;
+    const template = `
+ <form>   
+  {{#if enabling}}
+    <p>{{ localize "MODMANAGE.DepRequiredEnable" number=dependencies.length }}</p>
+    {{#each dependencies as |dependency|}}
+    <div class="form-group">
+      <label class="checkbox"><input type="checkbox" name="{{dependency.id}}" checked="checked" data-tooltip="{{ dependency.reason }}">{{dependency.title}}</label>
+    </div>
+    {{/each}} 
+  {{else}}
+    <p>{{ localize "MODMANAGE.DepDisable" number=dependencies.length }}</p> 
+    {{#each dependencies as |dependency|}}
+    <div class="form-group">
+      <label class="checkbox"><input type="checkbox" name="{{dependency.id}}" checked="checked" data-tooltip="{{ dependency.reason }}">{{dependency.title}}</label>
+    </div>
+    {{/each}}
+  {{/if}}
+ </form>   
+    `
 
-    let html = await renderTemplate("templates/setup/impacted-dependencies.html", {
+    const templateData = {
       enabling: input.checked,
       dependencies: dependenciesNotMatchingDesiredState
-    });
+    }
+    console.warn(templateData);
+    const content = (await Handlebars.compile(template))(templateData);
+    console.warn(content);
 
     return Dialog.confirm({
       title: game.i18n.localize("MODMANAGE.Dependencies"),
-      content: html,
+      content,
       yes: () => {
         locks.forEach(checkbox => {
             checkbox.checked = lock.checked;
@@ -190,7 +217,7 @@ function renderFinalDialog(culprit) {
     content: `<h2>We found the culprit!</h2>
 							<ul class='ftc-module-list'>
 								<li title="Currently active."><i class="fas fa-check ftc-active"></i>${
-                  game.modules.get(culprit).data.title
+                  game.modules.get(culprit).title
                 }</li>
 							</ul>`,
     buttons: {
@@ -228,7 +255,7 @@ function doFirstStep() {
               chosen?.length
                 ? `your chosen module list:
 								<ul class='ftc-module-list'>
-									${chosen.map((e) => `<li>- ${game.modules.get(e).data.title}</li>`).join("")}
+									${chosen.map((e) => `<li>- ${game.modules.get(e).title}</li>`).join("")}
 								</ul>`
                 : "the core software."
             }</p>`,
@@ -280,7 +307,7 @@ function doBinarySearchStep() {
                     .map(
                       (e) =>
                         `<li title="Currently active."><i class="fas fa-check ftc-active"></i>${
-                          game.modules.get(e).data.title
+                          game.modules.get(e).title
                         }</li>`
                     )
                     .join("")}
@@ -288,7 +315,7 @@ function doBinarySearchStep() {
                     .map(
                       (e) =>
                         `<li title="Currently inactive."><i class="fas fa-times ftc-inactive"></i>${
-                          game.modules.get(e).data.title
+                          game.modules.get(e).title
                         }</li>`
                     )
                     .join("")}
